@@ -42,7 +42,6 @@ export const useForm = ( initialForm = {}, formValidations = {} ) => {
         }
 
         setFormValidation( formCheckedValues );
-        console.log("🚀 ~ file: useForm.js:36 ~ createValidators ~ formCheckedValues:", formCheckedValues)
     }
 
     return {
