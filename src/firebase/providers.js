@@ -1,4 +1,4 @@
-import { GoogleAuthProvider, createUserWithEmailAndPassword, signInWithPopup, updateProfile } from "firebase/auth";
+import { GoogleAuthProvider, createUserWithEmailAndPassword, getAuth, signInWithPopup, updateProfile } from "firebase/auth";
 import { FirebaseAuth } from "./config";
 
 
@@ -31,12 +31,14 @@ export const singInWithGoogle = async() => {
 
 
 export const registerUserWithEmailPassword = async({ email, password, displayName }) => {
-  console.log("🚀 ~ file: providers.js:34 ~ registerUserWithEmailPassword ~ { email, password, displayName }:", { email, password, displayName })
-  
+    
   try {
+    // const auth = getAuth();
     const resp = await createUserWithEmailAndPassword( FirebaseAuth, email, password );
     const { uid, photoURL } = resp.user;
-    await updateProfile( FirebaseAuth.currentUser, { displayName});
+    // console.log("🚀 ~ file: providers.js:38 ~ registerUserWithEmailPassword ~ resp:", resp);
+    await updateProfile( FirebaseAuth.currentUser, { displayName } );
+    // await updateProfile( auth.currentUser, { displayName });
 
     return {
       ok: true,
@@ -44,7 +46,6 @@ export const registerUserWithEmailPassword = async({ email, password, displayNam
     }
 
   } catch (error) {
-    console.log("🚀 ~ file: providers.js:37 ~ registerUserWithEmailPassword ~ error:", error)
-    return { ok: false, errorMessage: error.message}
+    return { ok: false, errorMessage: 'Ya existe un usuario con ese correo'};
   }
 }
