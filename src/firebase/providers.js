@@ -1,4 +1,4 @@
-import { GoogleAuthProvider, createUserWithEmailAndPassword, getAuth, signInWithPopup, updateProfile } from "firebase/auth";
+import { GoogleAuthProvider, createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, signInWithPopup, updateProfile } from "firebase/auth";
 import { FirebaseAuth } from "./config";
 
 
@@ -33,12 +33,9 @@ export const singInWithGoogle = async() => {
 export const registerUserWithEmailPassword = async({ email, password, displayName }) => {
     
   try {
-    // const auth = getAuth();
     const resp = await createUserWithEmailAndPassword( FirebaseAuth, email, password );
     const { uid, photoURL } = resp.user;
-    // console.log("🚀 ~ file: providers.js:38 ~ registerUserWithEmailPassword ~ resp:", resp);
     await updateProfile( FirebaseAuth.currentUser, { displayName } );
-    // await updateProfile( auth.currentUser, { displayName });
 
     return {
       ok: true,
@@ -48,4 +45,27 @@ export const registerUserWithEmailPassword = async({ email, password, displayNam
   } catch (error) {
     return { ok: false, errorMessage: 'Ya existe un usuario con ese correo'};
   }
+}
+
+export const loginWithEmailPassword = async({ email, password}) => {
+
+  try {
+    const resp = await signInWithEmailAndPassword( FirebaseAuth, email, password );
+    const { uid, photoURL, displayName } = resp.user;
+   
+    return {
+      ok: true,
+      uid, photoURL, displayName
+    }
+
+  } catch (error) {
+
+    const errorCode = error.code;
+ 
+    if (errorCode == 'auth/user-not-found') {
+      return { ok: false, errorMessage: 'No pudimos encontrar tu Cuenta.'};
+    }
+    return { ok: false, errorMessage: 'Contraseña incorrecta.'};
+  }
+
 }
