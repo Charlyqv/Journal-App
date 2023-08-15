@@ -36,6 +36,7 @@ export const journalSlice = createSlice({
       },
     }
 });
+
 export const { 
   addNewEmptyNote,
   setActiveNote,
