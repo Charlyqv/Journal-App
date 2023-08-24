@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link as RouterLink } from 'react-router-dom';
 import { Alert, Button, Grid, Link, TextField, Typography } from '@mui/material';
-import { Google } from '@mui/icons-material';
+import { Apple, FacebookTwoTone, Google } from '@mui/icons-material';
 
 import { AuthLayout } from '../layout/AuthLayout';
 import { useForm } from '../../hooks';
@@ -30,9 +30,16 @@ export const LoginPage = () => {
   }
 
   const onGoogleSignIn = () => {
-    console.log('onGoggleSignIn');
     dispatch( startGoogleSignIn() );
   }
+            
+  const botonFBStyle = {
+    backgroundColor: 'rgb(24, 119, 242)', // R:255, G:0, B:0 - Rojo
+    color: 'white', // Cambia el color del texto según tu necesidad
+    padding: '10px 20px', // Añade estilos adicionales según tus preferencias
+    border: 'none',
+    cursor: 'pointer',
+  };
 
   return (
     <AuthLayout tittle='Login'>
@@ -76,7 +83,7 @@ export const LoginPage = () => {
           </Grid>
 
           <Grid container spacing={ 2 } sx={{ mb: 2, mt: 1 }}>
-            <Grid item xs={ 12 } sm={ 6 }>
+            <Grid item xs={ 12 } sm={ 12 }>
               <Button 
                 disabled= { isAuthenticating }
                 type='submit' 
@@ -85,7 +92,7 @@ export const LoginPage = () => {
                 Login
               </Button>
             </Grid>
-            <Grid item xs={ 12 } sm={ 6 }>
+            <Grid item xs={ 12 } sm={ 12 }>
               <Button 
                 disabled= { isAuthenticating }
                 variant='contained' 
@@ -93,6 +100,30 @@ export const LoginPage = () => {
                 onClick={ onGoogleSignIn }>
                 <Google />
                 <Typography sx={{ ml: 1 }}>Google</Typography>
+              </Button>
+            </Grid>
+
+            <Grid item xs={ 12 } sm={ 12 }>
+              <Button 
+                disabled= { isAuthenticating }
+                variant='contained' 
+                fullWidth
+                onClick={ onGoogleSignIn }
+                style={botonFBStyle}
+              >
+                <FacebookTwoTone />
+                <Typography sx={{ ml: 1 }}>Facebook</Typography>
+              </Button>
+            </Grid>
+
+            <Grid item xs={ 12 } sm={ 12 }>
+              <Button 
+                disabled= { isAuthenticating }
+                variant='contained' 
+                fullWidth
+                onClick={ onGoogleSignIn }>
+                <Apple />
+                <Typography sx={{ ml: 1 }}>iOS</Typography>
               </Button>
             </Grid>
           </Grid>

@@ -22,6 +22,18 @@ export const startGoogleSignIn = () => {
   }
 }
 
+export const startFacebookSignIn = () => {
+  return async( dispatch ) => {
+
+    dispatch( checkingCredentials() );
+
+    const result = await singInWithFacebook();
+    if( !result.ok ) return dispatch ( logout( result.errorMessage ) );
+
+    dispatch( login( result ));
+  }
+}
+
 
 export const startCreatingUserWithEmailPassword = ({ email, password, displayName }) => {
   return async( dispatch ) => {
