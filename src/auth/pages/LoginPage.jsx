@@ -7,7 +7,7 @@ import { Apple, FacebookTwoTone, Google } from '@mui/icons-material';
 import { AuthLayout } from '../layout/AuthLayout';
 import { useForm } from '../../hooks';
 
-import { startGoogleSignIn, startLoginWithEmailPassword } from '../../store/auth';
+import { startGoogleSignIn, startFacebookSignIn, startLoginWithEmailPassword } from '../../store/auth';
 
 const formData = {
   email: '',
@@ -31,6 +31,10 @@ export const LoginPage = () => {
 
   const onGoogleSignIn = () => {
     dispatch( startGoogleSignIn() );
+  }
+
+  const onFacebookSignIn = () => {
+    dispatch( startFacebookSignIn() );
   }
             
   const botonFBStyle = {
@@ -108,7 +112,7 @@ export const LoginPage = () => {
                 disabled= { isAuthenticating }
                 variant='contained' 
                 fullWidth
-                onClick={ onGoogleSignIn }
+                onClick={ onFacebookSignIn }
                 style={botonFBStyle}
               >
                 <FacebookTwoTone />

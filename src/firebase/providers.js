@@ -40,7 +40,6 @@ export const singInWithFacebook = async() => {
 
     return {
       ok: true,
-      // User info
       displayName, email, photoURL, uid
     }
     

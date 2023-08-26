@@ -1,4 +1,4 @@
-import { singInWithGoogle, registerUserWithEmailPassword, loginWithEmailPassword, logoutFirebase } from "../../firebase/providers";
+import { singInWithGoogle, registerUserWithEmailPassword, loginWithEmailPassword, logoutFirebase, singInWithFacebook } from "../../firebase/providers";
 import { clearNotesLogout } from "../journal";
 import { checkingCredentials, logout, login } from "./"
 
