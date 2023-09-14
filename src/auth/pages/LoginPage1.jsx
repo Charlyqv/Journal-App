@@ -3,34 +3,31 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link as RouterLink } from 'react-router-dom';
 import { Alert, Button, Grid, Link, TextField, Typography } from '@mui/material';
 import { Google } from '@mui/icons-material';
-import { FirebaseAuth } from "../../firebase/config";
 
 import { AuthLayout } from '../layout/AuthLayout';
-// import { useForm } from '../../hooks';
+import { useForm } from '../../hooks';
 
 import { startGoogleSignIn, startLoginWithEmailPassword } from '../../store/auth';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+
+const formData = {
+  email: '',
+  password: ''
+} 
 
 export const LoginPage = () => {
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const { status, errorMessage } = useSelector( state => state.auth );
 
-  const [error, setError] = useState(null);
+  const dispatch = useDispatch();
 
-  const { status } = useSelector( state => state.auth );
+  const { email, password, onInputChange } = useForm(formData);
 
   const isAuthenticating = useMemo( () => status === 'checking', [status] );
 
-  const signIn = (e) => {
-    e.preventDefault();
-    signInWithEmailAndPassword( FirebaseAuth, email, password)
-    .then((userCredential) => {
-      console.log(userCredential)
-    }).catch((error) => {
-      setError(error.message);
-      })
-    }    
+  const onSubmit = ( event ) => {
+    event.preventDefault();
+    dispatch( startLoginWithEmailPassword({ email, password }));
+  }
  
   const onGoogleSignIn = () => {
     dispatch( startGoogleSignIn() );
@@ -38,7 +35,7 @@ export const LoginPage = () => {
 
   return (
     <AuthLayout tittle='Login'>
-      <form onSubmit={signIn} className='animate__animated animate__fadeIn animate__faster'>
+      <form onSubmit={ onSubmit } className='animate__animated animate__fadeIn animate__faster'>
         <Grid container>
           <Grid item xs={ 12 } sx={{ mt: 2 }}>
             <TextField 
@@ -48,7 +45,7 @@ export const LoginPage = () => {
               fullWidth
               name='email'
               value={ email }
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={ onInputChange }
             />
           </Grid>
 
@@ -60,22 +57,19 @@ export const LoginPage = () => {
               fullWidth
               name='password'
               value={ password }
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={ onInputChange }
             />
           </Grid>
 
           <Grid 
             container 
+            display={ !!errorMessage ? '': 'none' }
             sx={{ mt: 1 }}>
             <Grid 
               item 
               xs={ 12 }
             >
-              {error && (
-                <Alert severity="error">
-                  {getErrorDisplayMessage(error)}
-                </Alert>
-              )}
+              <Alert severity='error'>{ errorMessage }</Alert>
             </Grid>
           </Grid>
 
@@ -110,18 +104,4 @@ export const LoginPage = () => {
       </form>
     </AuthLayout>
   )
-}
-
-function getErrorDisplayMessage(errorType) {
-  if (errorType === 'Firebase: Error (auth/user-not-found).') {
-    return 'No pudimos encontrar tu Cuenta.';
-  }else if(errorType == 'Firebase: Error (auth/wrong-password).'){
-    return 'Contraseña incorrecta.';
-  }else if(errorType == 'Firebase: Error (auth/invalid-email).' || errorType == 'Firebase: Error (auth/missing-password).'){
-    return 'Todos los campos son obligatorios';
-  }else if(errorType == 'Firebase: Access to this account has been temporarily disabled due to many failed login attempts. You can immediately restore it by resetting your password or you can try again later. (auth/too-many-requests).'){
-    return 'Realizaste demasiados intentos, vuelve más tarde.';
-  }else{
-    return 'Ocurrió un error inesperado.';
-  }
 }

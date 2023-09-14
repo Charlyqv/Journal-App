@@ -1,10 +1,9 @@
-import { FacebookAuthProvider, GoogleAuthProvider, createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, signInWithPopup, updateProfile } from "firebase/auth";
+import { GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, updateProfile } from "firebase/auth";
 import { FirebaseAuth } from "./config";
 
 
 const googleProvider = new GoogleAuthProvider();
 
-const facebookProvider = new FacebookAuthProvider();
 
 export const singInWithGoogle = async() => {
 
@@ -31,31 +30,6 @@ export const singInWithGoogle = async() => {
   }
 }
 
-export const singInWithFacebook = async() => {
-
-  try{
-    const result = await signInWithPopup( FirebaseAuth, facebookProvider );
-    
-    const { displayName, email, photoURL, uid } = result.user;
-
-    return {
-      ok: true,
-      displayName, email, photoURL, uid
-    }
-    
-  } catch (error) {  
-
-    const errorCode = error.code;
-    const errorMessage = error.message;
-
-    return{
-      ok: false,
-      errorMessage,
-    }
-  }
-}
-
-
 export const registerUserWithEmailPassword = async({ email, password, displayName }) => {
     
   try {
@@ -69,7 +43,14 @@ export const registerUserWithEmailPassword = async({ email, password, displayNam
     }
 
   } catch (error) {
-    return { ok: false, errorMessage: 'Ya existe un usuario con ese correo'};
+    
+    const errorCode = error.code;
+
+    if (errorCode == 'auth/email-already-in-use') {
+      return { ok: false, errorMessage: 'Ya existe un usuario con ese correo'};
+    }else if(errorCode == 'auth/invalid-email'){
+      return { ok: false, errorMessage: 'Debe ser un correo electrónico válido'};
+    }
   }
 }
 
@@ -85,13 +66,17 @@ export const loginWithEmailPassword = async({ email, password}) => {
     }
 
   } catch (error) {
-
     const errorCode = error.code;
  
     if (errorCode == 'auth/user-not-found') {
       return { ok: false, errorMessage: 'No pudimos encontrar tu Cuenta.'};
+    }else if(errorCode == 'auth/wrong-password'){
+      return { ok: false, errorMessage: 'Contraseña incorrecta.'};
+    }else if(errorCode == 'auth/invalid-email' || errorCode == 'auth/missing-password'){
+      return { ok: false, errorMessage: 'Todos los campos son obligatorios'};
+    }else{
+      return { ok: true, errorMessage: ''};
     }
-    return { ok: false, errorMessage: 'Contraseña incorrecta.'};
   }
 
 }
