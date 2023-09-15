@@ -6,9 +6,8 @@ import { Google } from '@mui/icons-material';
 import { FirebaseAuth } from "../../firebase/config";
 
 import { AuthLayout } from '../layout/AuthLayout';
-// import { useForm } from '../../hooks';
 
-import { startGoogleSignIn, startLoginWithEmailPassword } from '../../store/auth';
+import { startGoogleSignIn } from '../../store/auth';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 
 export const LoginPage = () => {
@@ -26,7 +25,6 @@ export const LoginPage = () => {
     e.preventDefault();
     signInWithEmailAndPassword( FirebaseAuth, email, password)
     .then((userCredential) => {
-      console.log(userCredential)
     }).catch((error) => {
       setError(error.message);
       })

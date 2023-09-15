@@ -1,50 +1,38 @@
 import { useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useForm } from '../../hooks';
-import { Alert, Button, Grid, Link, TextField, Typography } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
+import { Alert, Button, Grid, Link, TextField, Typography } from '@mui/material';
+
 import { AuthLayout } from '../layout/AuthLayout';
+
 import { startCreatingUserWithEmailPassword } from '../../store/auth';
-
-const formData = {
-  email:'',
-  password:'',
-  displayName:'',
-}
-
-const formValidations = {
-  email: [ (value) => value.includes('@'), 'El correo debe contener una @.'],
-  password: [ (value) => value.length >= 6, 'El password debe tener más de 6 letras.'],
-  displayName: [ (value) => value.length >= 1, 'El nombre es obligatorio.'],
-}
 
 export const RegisterPage = () => {
 
   const dispatch = useDispatch();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [displayName, setDisplayName] = useState('');
 
-  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [error, setError] = useState(null);
 
-  const { status, errorMessage } = useSelector( state => state.auth );
+  const { status } = useSelector( state => state.auth );
+
   const isCheckingAuthentication = useMemo( () => status === 'checking', [status]);
 
-  const { 
-    formState, displayName, email, password, onInputChange, 
-    isFormValid, displayNameValid, emailValid, passwordValid,
-  } = useForm(formData, formValidations);
-
-  const onSubmit = ( event ) => {
-    event.preventDefault();
-    setFormSubmitted(true);
-
-    if ( !isFormValid ) return;
-
-    dispatch( startCreatingUserWithEmailPassword(formState) );
-  }
-
+  const signUp = (e) => {
+    e.preventDefault();
+    dispatch( startCreatingUserWithEmailPassword({email, password, displayName}))
+    .then((userCredential) => {
+    }).catch((error) => {
+      setError(error.message);
+      })
+    }    
+ 
   return (
     <AuthLayout tittle='Crear cuenta'>
 
-      <form onSubmit={ onSubmit } className='animate__animated animate__fadeIn animate__faster'>
+      <form onSubmit={signUp} className='animate__animated animate__fadeIn animate__faster'>
         <Grid container>
 
           <Grid item xs={ 12 } sx={{ mt: 2 }}>
@@ -55,9 +43,7 @@ export const RegisterPage = () => {
               fullWidth
               name='displayName'
               value={ displayName }
-              onChange={ onInputChange }
-              error={ !!displayNameValid && formSubmitted }
-              helperText={ displayNameValid }
+              onChange={(e) => setDisplayName(e.target.value)}
             />
           </Grid>
 
@@ -69,9 +55,7 @@ export const RegisterPage = () => {
               fullWidth
               name='email'
               value={ email }
-              onChange={ onInputChange }
-              error={ !!emailValid && formSubmitted }
-              helperText={ emailValid }
+              onChange={(e) => setEmail(e.target.value)}
             />
           </Grid>
 
@@ -83,9 +67,7 @@ export const RegisterPage = () => {
               fullWidth
               name='password'
               value={ password }
-              onChange={ onInputChange }
-              error={ !!passwordValid && formSubmitted }
-              helperText={ passwordValid }
+              onChange={(e) => setPassword(e.target.value)}
             />
           </Grid>
 
@@ -94,9 +76,12 @@ export const RegisterPage = () => {
             <Grid 
               item 
               xs={ 12 } 
-              display={ !!errorMessage ? '': 'none' }
             >
-              <Alert severity='error'>{ errorMessage }</Alert>
+              {error && (
+                <Alert severity="error">
+                  {getErrorDisplayMessage(error)}
+                </Alert>
+              )}
             </Grid>
 
             <Grid item xs={ 12 }>
@@ -121,4 +106,14 @@ export const RegisterPage = () => {
       </form>
     </AuthLayout>
   )
+}
+
+function getErrorDisplayMessage(errorType) {
+  if (errorType === 'Firebase: Error (auth/email-already-in-use).') {
+    return 'Ya existe un usuario con ese correo';
+  }else if(errorType == 'Firebase: Error (auth/invalid-email).'){
+    return 'Debe ser un correo electrónico válido';
+  }else{
+    return 'Ocurrió un error inesperado.';
+  }
 }
